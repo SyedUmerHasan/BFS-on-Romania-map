@@ -2,7 +2,9 @@ import collections
 
 
 def new_bfs(graph, root):
-    totalCost = 0
+    temp = []
+    for i in range(len(graph)):
+        temp.append(0)
     visited, queue = set(), collections.deque([graph[root]["cityID"]])
     visited.add(graph[root]["cityID"])
     count = 0
@@ -10,10 +12,10 @@ def new_bfs(graph, root):
         count += 1
         vertex = queue.popleft()
         for neighbour in graph[vertex]["connectingCities"]:
+            print(neighbour)
             if neighbour not in visited:
                 visited.add(neighbour)
-                print(neighbour)
-                print(neighbour)
+                print("Inside > " ,neighbour)
                 queue.append(neighbour)
     print(visited)
 
@@ -53,9 +55,9 @@ def input_map():
 
 
 if __name__ == '__main__':
-    # newarray = [{'cityID': 0, 'nameOfCity': 'umer', 'connectingCities': [1, 2]},
-    #             {'cityID': 1, 'nameOfCity': 'saba', 'connectingCities': [0]},
-    #             {'cityID': 2, 'nameOfCity': 'sara', 'connectingCities': [3]},
-    #             {'cityID': 3, 'nameOfCity': 'Huzaifa', 'connectingCities': [1,2]}]
+    # newarray = [{'cityID': 0, 'nameOfCity': 'umer', 'connectingCities': [1, 2], "costOfConnectingCities": [10, 15]},
+    #             {'cityID': 1, 'nameOfCity': 'saba', 'connectingCities': [0], "costOfConnectingCities": [10, 15]},
+    #             {'cityID': 2, 'nameOfCity': 'sara', 'connectingCities': [3], "costOfConnectingCities": [10, 15]},
+    #             {'cityID': 3, 'nameOfCity': 'Huzaifa', 'connectingCities': [1, 2], "costOfConnectingCities": [10, 15]}]
     newarray = input_map()
     new_bfs(newarray, 0)
