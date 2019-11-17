@@ -2,13 +2,14 @@ import collections
 
 costArray = []
 
+
 def filterByCityID(cityId, graph):
     iteratingArray = list(filter(lambda person: person['cityID'] == cityId, graph))
     iteratingArray = iteratingArray[0]
     return iteratingArray
 
-def new_bfs(graph, root):
 
+def new_bfs(graph, root):
     for i in range(len(graph)):
         costArray.append(0)
 
@@ -20,15 +21,16 @@ def new_bfs(graph, root):
         # print("Iterating over Index ->", graph.)
         vertex = queue.popleft()
         iteratingArray = filterByCityID(vertex, graph)
-        print("While " , iteratingArray)
+        print("From", iteratingArray["nameOfCity"])
         count = 0
         for neighbour in graph[vertex]["connectingCities"]:
             # neighbour = graph[vertex]["connectingCities"][count]
             eachNeighbour = filterByCityID(neighbour, graph)
-            print("For",eachNeighbour)
+            print("to ", eachNeighbour["nameOfCity"])
+            print("cost = ", iteratingArray["costOfConnectingCities"][count])
             if neighbour not in visited:
-                costArray[eachNeighbour["cityID"]] = costArray[iteratingArray["cityID"]] + iteratingArray["costOfConnectingCities"][count]
-                print("cost ",iteratingArray["cityID"] ,"   " , iteratingArray["costOfConnectingCities"][count])
+                costArray[eachNeighbour["cityID"]] = costArray[iteratingArray["cityID"]] + \
+                                                     iteratingArray["costOfConnectingCities"][count]
                 visited.add(neighbour)
                 # print("IF Condition -> Inside > " ,neighbour)
                 queue.append(neighbour)
@@ -36,7 +38,8 @@ def new_bfs(graph, root):
 
         print("", end="\n")
 
-    print(costArray)
+    print("Total Cost = ", costArray)
+
 
 def input_map():
     nameConditionOfNodes = input("Do you want to enter city details? Yes/No (No for Default Map) ?")
@@ -59,9 +62,18 @@ def input_map():
             tempDictionary["connectingCities"] = neighbourNodes.split(",")
             tempDictionary["connectingCities"] = list(map(int, tempDictionary["connectingCities"]))
 
+            costOfNeighbourNodes = input("Enter cost of neighbour nodes in respective terms [1,2,3,4,5]=> ")
+            # Removing spaces from Node Name
+            costOfNeighbourNodes.replace(" ", "")
+            # Lower casing for not to conflict with other cases
+            costOfNeighbourNodes.lower()
+
+            tempDictionary["costOfConnectingCities"] = costOfNeighbourNodes.split(",")
+            tempDictionary["costOfConnectingCities"] = list(map(int, tempDictionary["costOfConnectingCities"]))
+
             arrayOfDictionary.append(tempDictionary)
 
-        print(arrayOfDictionary)
+        return arrayOfDictionary
     else:
         print("*********************Using Default City Map*********************")
         arrayOfDictionary = [
@@ -72,10 +84,35 @@ def input_map():
     return arrayOfDictionary
 
 
+def dfs_iterative(graph, start):
+    startCity = filterByCityID(start, graph)
+    print("From ", startCity["nameOfCity"])
+    stack, path = [start], []
+    while stack:
+        vertex = stack.pop()
+        if vertex in path:
+            continue
+        path.append(vertex)
+        myData = filterByCityID(vertex, graph)
+        for neighbor in myData["connectingCities"]:
+            stack.append(neighbor)
+        print("To", myData["nameOfCity"], " with ID = ", myData["cityID"], ", Costs", costArray[myData["cityID"]])
+    return path
+
+
 if __name__ == '__main__':
-    # newarray = [{'cityID': 0, 'nameOfCity': 'umer', 'connectingCities': [1, 2], "costOfConnectingCities": [10, 15]},
-    #             {'cityID': 1, 'nameOfCity': 'saba', 'connectingCities': [0], "costOfConnectingCities": [10, 15]},
-    #             {'cityID': 2, 'nameOfCity': 'sara', 'connectingCities': [3], "costOfConnectingCities": [10, 15]},
-    #             {'cityID': 3, 'nameOfCity': 'Huzaifa', 'connectingCities': [1, 2], "costOfConnectingCities": [10, 15]}]
+    # arrayOfDictionary = [
+    #     {'cityID': 0, 'nameOfCity': 'Oradea', 'connectingCities': [1, 2], "costOfConnectingCities": [71, 151]},
+    #     {'cityID': 1, 'nameOfCity': 'Zerind', 'connectingCities': [3], "costOfConnectingCities": [75]},
+    #     {'cityID': 2, 'nameOfCity': 'Sibiu', 'connectingCities': [3], "costOfConnectingCities": [140]},
+    #     {'cityID': 3, 'nameOfCity': 'Arad', 'connectingCities': [1, 2], "costOfConnectingCities": [75, 140]}]
     newarray = input_map()
+    print("**********************************************************")
+    print("Breadth First Search")
+    print("**********************************************************")
     new_bfs(newarray, 0)
+    print("**********************************************************")
+    print("Depth First Search")
+    print("**********************************************************")
+    dfspath = dfs_iterative(newarray, 0)
+    print("The Path Followed = ", dfspath)
